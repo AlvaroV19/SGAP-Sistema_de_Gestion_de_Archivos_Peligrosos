@@ -1,1 +1,1 @@
-# SGAP-Sistema_de_Gesti-n_de_Archivos_Peligrosos
+# SGAP-Sistema_de_Gestion_de_Archivos_Peligrosos
