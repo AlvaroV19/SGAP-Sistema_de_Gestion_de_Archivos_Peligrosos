@@ -1,0 +1,18 @@
+# Backend
+sgap-security/target/
+*.class
+
+# Frontend
+sgap-front/node_modules/
+sgap-front/dist/
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
