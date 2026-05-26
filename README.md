@@ -84,6 +84,8 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 - Maven
 - Node.js y npm
 - Docker Desktop
+- PostgreSQL
+- pgAdmin 4
 - Git
 
 ---
@@ -101,6 +103,66 @@ El backend utiliza las siguientes dependencias principales:
 - MinIO
 - Apache Tika
 - OpenPDF
+
+---
+
+# Configuración de PostgreSQL y pgAdmin 4
+
+Antes de ejecutar el backend, es necesario configurar PostgreSQL correctamente.
+
+---
+
+## 1. Crear la base de datos
+
+Abrir pgAdmin 4 y crear una nueva base de datos llamada:
+
+```txt
+sgap_db
+```
+
+---
+
+## 2. Configurar usuario y contraseña
+
+El proyecto utiliza por defecto la siguiente configuración en:
+
+```txt
+sgap-security/src/main/resources/application.properties
+```
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/sgap_db
+spring.datasource.username=postgres
+spring.datasource.password=12345
+```
+
+Cada computador puede tener un usuario y contraseña diferente en PostgreSQL.
+
+Por lo tanto, debes modificar:
+
+```properties
+spring.datasource.username=postgres
+spring.datasource.password=12345
+```
+
+por las credenciales configuradas en tu equipo.
+
+Ejemplo:
+
+```properties
+spring.datasource.username=TU_USUARIO
+spring.datasource.password=TU_CONTRASEÑA
+```
+
+---
+
+## 3. Verificar PostgreSQL
+
+Antes de iniciar el backend:
+
+- Verificar que PostgreSQL esté en ejecución.
+- Verificar que la base de datos `sgap_db` exista.
+- Verificar que las credenciales configuradas sean correctas.
 
 ---
 
@@ -167,6 +229,12 @@ Ejecuta:
 
 ```bash
 docker compose up
+```
+
+o en segundo plano:
+
+```bash
+docker compose up -d
 ```
 
 Esto iniciará:
@@ -340,6 +408,9 @@ contiene ejemplos de archivos para validar el funcionamiento del análisis de se
 # Notas Importantes
 
 - Verificar que Docker Desktop esté activo antes de iniciar el backend.
+- Verificar que PostgreSQL esté correctamente configurado.
+- Verificar que la base de datos `sgap_db` exista.
+- Verificar que las credenciales PostgreSQL sean correctas.
 - Asegurarse de que los puertos `5173`, `5432`, `9000` y `9001` estén disponibles.
 - No subir la carpeta `target/` al repositorio.
 - No subir `node_modules/`.
