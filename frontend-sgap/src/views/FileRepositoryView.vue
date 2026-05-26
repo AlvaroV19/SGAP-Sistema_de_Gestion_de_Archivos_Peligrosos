@@ -127,7 +127,7 @@
                 <td style="color:var(--text-muted);font-size:12.5px;white-space:nowrap;">{{ formatFecha(a.fecha || a.createdAt) }}</td>
                 <td>
                   <div style="display:flex;gap:6px;">
-                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;"><i class="bi bi-eye"></i></button>
+                    <button class="btn-ghost" style="padding:4px 10px;font-size:12px;" @click="verDetalle(a)"><i class="bi bi-eye"></i></button>
                     <button class="btn-ghost" style="padding:4px 10px;font-size:12px;color:#dc2626;border-color:#fca5a5;" @click="eliminar(a.id)"><i class="bi bi-trash3"></i></button>
                   </div>
                 </td>
@@ -154,6 +154,12 @@
     @upload="subir"
   />
 
+  <FileDetailModal
+    :show="mostrarDetalle"
+    :archivo="archivoSeleccionado"
+    @close="mostrarDetalle = false"
+  />
+
 
   <!-- TOASTS -->
   <ToastStack :toasts="toasts" />
@@ -162,20 +168,23 @@
 <script>
 import { subirArchivo, obtenerArchivos } from "../services/api";
 
+import FileDetailModal from '../components/files/FileDetailModal.vue'
 import FileUploadModal from '../components/files/FileUploadModal.vue'
 import ToastStack from '../components/ui/ToastStack.vue'
 import Sidebar from '../components/Sidebar.vue'
 
 export default {
-  components: { FileUploadModal, ToastStack, Sidebar },
+  components: { FileDetailModal, FileUploadModal, ToastStack, Sidebar },
   props: ['usuario', 'vistaActual'],
   emits: ['navegar', 'cerrar-sesion'],
   data() {
     return {
       archivo: null,
+      archivoSeleccionado: null,
       nivelRiesgo: "MEDIO",
       archivos: [],
       mostrarModal: false,
+      mostrarDetalle: false,
       arrastrando: false,
       subiendo: false,
       cargando: false,
@@ -213,6 +222,10 @@ export default {
   methods: {
     handleFile(e) { this.archivo = e.target.files[0] || null },
     onDrop(e) { this.arrastrando = false; this.archivo = e.dataTransfer.files[0] || null },
+    verDetalle(archivo) {
+      this.archivoSeleccionado = archivo || null;
+      this.mostrarDetalle = !!archivo;
+    },
 
     // --- Search dropdown handlers ---
     onSearchInput() {

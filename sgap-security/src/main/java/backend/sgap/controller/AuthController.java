@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Devuelve un Bearer token JWT en caso de credenciales correctas.
  */
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {

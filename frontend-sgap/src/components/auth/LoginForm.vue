@@ -1,10 +1,8 @@
 <template>
   <div class="login-bg">
-    <!-- Dotted texture overlay -->
     <div class="login-dots"></div>
 
     <div class="login-card">
-      <!-- Logo -->
       <div class="login-logo">
         <i class="bi bi-shield-fill"></i>
       </div>
@@ -12,35 +10,18 @@
       <h1 class="login-title">Bienvenido a SGAP</h1>
       <p class="login-subtitle">Inicia sesión para acceder al repositorio seguro de archivos.</p>
 
-      <!-- Demo role picker -->
-      <div class="login-role-pick">
-        <span class="role-pick-label">Demostración — selecciona un rol:</span>
-        <div class="role-pick-btns">
-          <button
-            v-for="r in roles" :key="r.key"
-            class="role-btn"
-            :class="{ active: rolSeleccionado === r.key }"
-            @click="rolSeleccionado = r.key"
-          >
-            <i :class="r.icon"></i>
-            {{ r.label }}
-          </button>
-        </div>
-      </div>
-
       <div class="login-form">
-        <!-- Email -->
         <div class="lf-group">
-          <label class="lf-label">Correo institucional</label>
+          <label class="lf-label">Usuario</label>
           <input
-            v-model="email"
-            type="email"
+            v-model="username"
+            type="text"
             class="lf-input"
-            :placeholder="rolActual.email"
+            placeholder="nombre.usuario"
+            @keyup.enter="iniciarSesion"
           />
         </div>
 
-        <!-- Password -->
         <div class="lf-group">
           <div class="lf-label-row">
             <label class="lf-label">Contraseña</label>
@@ -52,15 +33,21 @@
               :type="mostrarPass ? 'text' : 'password'"
               class="lf-input"
               placeholder="••••••••••••"
+              @keyup.enter="iniciarSesion"
             />
-            <button class="lf-eye" @click="mostrarPass = !mostrarPass">
+            <button class="lf-eye" @click="mostrarPass = !mostrarPass" type="button">
               <i :class="mostrarPass ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
             </button>
           </div>
         </div>
 
-        <!-- Sign in -->
-        <button class="lf-submit" @click="iniciarSesion" :disabled="iniciando">
+        <!-- Mensaje de error -->
+        <div v-if="errorMsg" class="lf-error">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          {{ errorMsg }}
+        </div>
+
+        <button class="lf-submit" @click="iniciarSesion" :disabled="iniciando || !username || !password">
           <span v-if="iniciando">
             <span class="sgap-spinner"></span> Verificando...
           </span>
@@ -74,7 +61,6 @@
       </div>
     </div>
 
-    <!-- Warning bar -->
     <div class="login-warning">
       <i class="bi bi-shield-exclamation"></i>
       SISTEMA PARA USO EXCLUSIVO DE PERSONAL AUTORIZADO
@@ -83,34 +69,54 @@
 </template>
 
 <script>
+import { login } from '../../services/auth.js'
+
 export default {
   emits: ['login'],
   data() {
     return {
-      email: '',
+      username: '',
       password: '',
       mostrarPass: false,
       iniciando: false,
-      rolSeleccionado: 'analista',
-      roles: [
-        { key: 'analista', label: 'Analista',       icon: 'bi bi-person-badge',      email: 'analista@sgap.gov.co'  },
-        { key: 'admin',    label: 'Administrador',   icon: 'bi bi-person-gear',       email: 'admin@sgap.gov.co'     },
-        { key: 'auditor',  label: 'Auditor',         icon: 'bi bi-person-check',      email: 'auditor@sgap.gov.co'   },
-      ],
-    }
-  },
-  computed: {
-    rolActual() {
-      return this.roles.find(r => r.key === this.rolSeleccionado) || this.roles[0]
+      errorMsg: '',
     }
   },
   methods: {
     async iniciarSesion() {
+      if (!this.username || !this.password) return
       this.iniciando = true
-      await new Promise(r => setTimeout(r, 900))
-      this.iniciando = false
-      this.$emit('login', this.rolSeleccionado)
+      this.errorMsg  = ''
+      try {
+        const usuario = await login(this.username, this.password)
+        // Emitir al padre el objeto de usuario con nombre y rol reales del backend
+        this.$emit('login', usuario)
+      } catch (err) {
+        const status = err?.response?.status
+        if (status === 401 || status === 403) {
+          this.errorMsg = 'Credenciales incorrectas. Verifica tu correo y contraseña.'
+        } else {
+          this.errorMsg = 'No se pudo conectar con el servidor. Intenta más tarde.'
+        }
+      } finally {
+        this.iniciando = false
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+.lf-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+</style>
