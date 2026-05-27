@@ -206,7 +206,7 @@ jwt.expiration-ms=86400000
 
 ```bash
 git clone https://github.com/AlvaroV19/SGAP-Sistema_de_Gestion_de_Archivos_Peligrosos.git
-cd SGAP
+cd SGAP-Sistema_de_Gestion_de_Archivos_Peligrosos
 ```
 
 ---
